@@ -1,0 +1,32 @@
+{
+  "name": "@topology/layout",
+  "version": "0.2.4",
+  "description": "A layout tool for le5le-topology.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "copy": "copyfiles  package.json ../../dist/layout/",
+    "build": "tsc && npm run copy"
+  },
+  "keywords": [
+    "topology",
+    "chart",
+    "canvas"
+  ],
+  "author": "alsmile123@qq.com",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/le5le-com/topology.git"
+  },
+  "bugs": {
+    "url": "https://github.com/le5le-com/topology/issues"
+  },
+  "homepage": "https://github.com/le5le-com/topology#readme",
+  "dependencies": {
+    "@topology/core": "^0.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
