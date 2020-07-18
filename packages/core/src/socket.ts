@@ -1,8 +1,8 @@
-import { Pen, EventType } from './models';
+import { EventType, TopologyData } from './models';
 
 export class Socket {
   socket: WebSocket;
-  constructor(public url: string, public pens: Pen[]) {
+  constructor(public url: string, public data: TopologyData) {
     this.init();
   }
 
@@ -17,7 +17,7 @@ export class Socket {
   }
 
   onmessage = (e: MessageEvent) => {
-    if (!this.pens.length || !e || !e.data) {
+    if (!this.data.pens.length || !e || !e.data) {
       return;
     }
 
@@ -28,13 +28,13 @@ export class Socket {
       msg = e.data;
     }
 
-    for (const item of this.pens) {
+    for (const item of this.data.pens) {
       for (const event of item.events) {
         if (event.type === EventType.WebSocket) {
           if (event.name && event.name === msg.event) {
-            item.doSocket(event, msg.data, this.socket);
+            item.doSocketMqtt(event, msg.data, this.socket);
           } else if (!event.name && msg) {
-            item.doSocket(event, msg, this.socket);
+            item.doSocketMqtt(event, msg, this.socket);
           }
         }
       }

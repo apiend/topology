@@ -1,11 +1,11 @@
 
 import * as mqtt from './mqtt.min.js';
 
-import { Pen, EventType } from './models';
+import { EventType, TopologyData } from './models';
 
 export class MQTT {
   client: any;
-  constructor(public url: string, public options: any, public topics: string, public pens: Pen[]) {
+  constructor(public url: string, public options: any, public topics: string, public data: TopologyData) {
     this.init();
   }
 
@@ -19,15 +19,15 @@ export class MQTT {
   }
 
   onmessage = (topic: string, message: any) => {
-    if (!this.pens.length || !topic) {
+    if (!this.data.pens.length || !topic) {
       return;
     }
 
-    for (const item of this.pens) {
+    for (const item of this.data.pens) {
       for (const event of item.events) {
         if (event.type === EventType.Mqtt) {
           if (event.name && topic.indexOf(event.name) > -1) {
-            item.doMqtt(event, message, this.client);
+            item.doSocketMqtt(event, message.toString(), this.client);
           }
         }
       }

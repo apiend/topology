@@ -1,6 +1,6 @@
 {
   "name": "topology-bundle",
-  "version": "0.2.4",
+  "version": "0.2.24",
   "description": "The bundle of topology libs.",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,7 @@
     "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "babel-loader": "^8.0.6",
+    "copyfiles": "latest",
     "path": "^0.12.7",
     "ts-loader": "^6.0.3",
     "ts-node": "~7.0.0",
@@ -30,7 +31,10 @@
     "tslint": "~5.15.0",
     "typescript": "~3.8.3",
     "webpack": "^4.37.0",
-    "webpack-cli": "^3.3.6",
-    "copyfiles": "latest"
-  }
+    "webpack-cli": "^3.3.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "78f2a53ca1839c89b56e2e498d17ba4eb987ad14"
 }

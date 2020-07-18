@@ -18,27 +18,13 @@ topology-angular 是一个可视化 angular app。
 $ yarn
 $ yarn start
 
+# 本地调试，带登录
+# 修改host文件：127.0.0.1 local.le5le.com
+$ yarn le5le
+
 # build
 $ yarn build
 
-```
-
-## 调试本地开发环境
-
-```
-$ yarn
-
-//【注意】 修改host文件，把local.dev.le5le.com代理到127.0.0.1
-$ yarn dev
-```
-
-## 调试生产环境
-
-```
-$ yarn
-
-//【注意】 修改host文件，把local.le5le.com代理到127.0.0.1
-$ yarn prod
 ```
 
 # License

@@ -69,9 +69,12 @@ export class CoreModule {
         return;
       }
 
-      const msg: any = JSON.parse(e.data);
-      if (msg && this.socketCallback[msg.cb]) {
-        this.socketCallback[msg.cb](msg);
+      try {
+        const msg: any = JSON.parse(e.data);
+        if (msg && this.socketCallback[msg.cb]) {
+          this.socketCallback[msg.cb](msg);
+        }
+      } catch (error) {
       }
     };
 
@@ -102,6 +105,5 @@ export class CoreModule {
 
     ret.usernamePinyin = this._coreService.getPinyin(ret.username);
     Store.set('user', ret);
-    this.initWebsocket();
   }
 }

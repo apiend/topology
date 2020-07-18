@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open --port=3020",
+    "le5le": "ng serve --open --host=local.le5le.com --port=3020",
     "build": "ng build --prod"
   },
   "private": true,

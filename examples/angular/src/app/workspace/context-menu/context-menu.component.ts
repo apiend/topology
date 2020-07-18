@@ -24,6 +24,22 @@ export class ContextMenuComponent implements OnInit {
   ngOnInit() {
   }
 
+  onUp() {
+    if (!this.selection) {
+      return;
+    }
+    if (this.selection.pen) {
+      this.canvas.up(this.selection.pen);
+    }
+    if (this.selection.pens) {
+      for (const item of this.selection.pens) {
+        this.canvas.up(item);
+      }
+    }
+
+    this.canvas.render();
+  }
+
   onTop() {
     if (!this.selection) {
       return;
@@ -34,6 +50,22 @@ export class ContextMenuComponent implements OnInit {
     if (this.selection.pens) {
       for (const item of this.selection.pens) {
         this.canvas.top(item);
+      }
+    }
+
+    this.canvas.render();
+  }
+
+  onDown() {
+    if (!this.selection) {
+      return;
+    }
+    if (this.selection.pen) {
+      this.canvas.down(this.selection.pen);
+    }
+    if (this.selection.pens) {
+      for (const item of this.selection.pens) {
+        this.canvas.down(item);
       }
     }
 

@@ -56,8 +56,9 @@ export class RenderLayer extends Canvas {
     }
 
     if (this.bkImg && this.bkImgRect) {
-      ctx.drawImage(this.bkImg, this.bkImgRect.x, this.bkImgRect.y, this.bkImgRect.width,
-        this.bkImgRect.height, 0, 0, this.width, this.height);
+      // ctx.drawImage(this.bkImg, this.bkImgRect.x, this.bkImgRect.y, this.bkImgRect.width,
+      //   this.bkImgRect.height, 0, 0, this.width, this.height);
+      ctx.drawImage(this.bkImg, 0, 0, this.width, this.height);
     }
 
     ctx.drawImage(this.offscreen, 0, 0, this.width, this.height);

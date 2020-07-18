@@ -1,4 +1,53 @@
 import { Point } from '../models/point';
+import { Pen } from '../models/pen';
+import { Node } from '../models/node';
+
+export function flatNodes(nodes: Pen[]): Node[] {
+  const result: Node[] = [];
+
+  for (const item of nodes) {
+    if (item.type) {
+      continue;
+    }
+    result.push(item as Node);
+    if ((item as Node).children) {
+      result.push.apply(result, flatNodes((item as Node).children));
+    }
+  }
+
+  return result;
+}
+
+export function getParent(pens: Pen[], child: Node): Node {
+  let parent: Node;
+  for (const item of pens) {
+    if (item.type) {
+      continue;
+    }
+    if (!(item as Node).children) {
+      continue;
+    }
+
+    for (const subItem of (item as Node).children) {
+      if (subItem.id === child.id) {
+        return item as Node;
+      }
+
+      if (subItem.type) {
+        continue;
+      }
+      if ((subItem as Node).children) {
+        parent = getParent((subItem as Node).children, child);
+        if (parent) {
+          return parent;
+        }
+      }
+    }
+  }
+
+  return parent;
+}
+
 
 export function pointInRect(point: Point, vertices: Point[]): boolean {
   if (vertices.length < 3) {

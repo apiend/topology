@@ -1,8 +1,12 @@
 import { Node } from '@topology/core';
 
 export function swimlaneV(ctx: CanvasRenderingContext2D, node: Node) {
-  const wr = node.rect.width * node.borderRadius;
-  const hr = node.rect.height * node.borderRadius;
+  let wr = node.borderRadius;
+  let hr = node.borderRadius;
+  if (node.borderRadius < 1) {
+    wr = node.rect.width * node.borderRadius;
+    hr = node.rect.height * node.borderRadius;
+  }
   let r = wr < hr ? wr : hr;
   if (node.rect.width < 2 * r) {
     r = node.rect.width / 2;

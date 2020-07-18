@@ -9,7 +9,7 @@ export function createDiv(node: Node) {
   div.style.left = '-9999px';
   div.style.bottom = '-9999px';
   div.style.width = node.rect.width + 'px';
-  div.style.height = node.rect.height + '2px';
+  div.style.height = node.rect.height + 'px';
   if (node.elementId) {
     div.id = node.elementId;
   }

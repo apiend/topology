@@ -10,9 +10,9 @@ import { TopologyData } from './models/data';
 import { Lock } from './models/status';
 
 import { drawLineFns } from './middles';
-import { flatNodes } from './middles/functions/node';
 import { getBezierPoint } from './middles/lines/curve';
 import { Layer } from './layer';
+import { flatNodes, getParent } from './utils';
 
 export class ActiveLayer extends Layer {
   protected data: TopologyData;
@@ -191,6 +191,12 @@ export class ActiveLayer extends Layer {
 
     let offsetX = p2.x - p1.x;
     let offsetY = p2.y - p1.y;
+    if (this.options.onlySizeX) {
+      offsetY = 0;
+    }
+    if (this.options.onlySizeY) {
+      offsetX = 0;
+    }
     const lines: Line[] = [];
 
     switch (type) {
@@ -216,8 +222,12 @@ export class ActiveLayer extends Layer {
         case PenType.Line:
           break;
         default:
-          item.rect.width = this.nodeRects[i].width + offsetX;
-          item.rect.height = this.nodeRects[i].height + offsetY;
+          if (!(item as Node).onlySizeX) {
+            item.rect.width = this.nodeRects[i].width + offsetX;
+          }
+          if (!(item as Node).onlySizeY) {
+            item.rect.height = this.nodeRects[i].height + offsetY;
+          }
 
           if (item.rect.width < 10) {
             item.rect.width = 10;
@@ -353,7 +363,7 @@ export class ActiveLayer extends Layer {
           line.to.y = item.rotatedAnchors[line.to.anchorIndex].y;
           ++cnt;
         }
-        if (cnt) {
+        if (cnt && !this.data.manualCps) {
           line.calcControlPoints();
         }
         line.textRect = null;
@@ -417,6 +427,9 @@ export class ActiveLayer extends Layer {
   updateRotate() {
     for (const item of this.pens) {
       item.rotate += item.offsetRotate;
+      if (item.type === PenType.Node && item.rectInParent) {
+        item.rectInParent.rotate += item.offsetRotate;
+      }
       item.offsetRotate = 0;
     }
     this.rotate = 0;

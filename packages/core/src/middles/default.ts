@@ -312,3 +312,5 @@ export function registerArrow(
   drawArrowFns[name] = drawFn;
   return true;
 }
+
+(window as any).registerTopologyNode = registerNode;

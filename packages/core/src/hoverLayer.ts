@@ -1,12 +1,13 @@
-import { TopologyData } from './models/data';
-import { Rect } from './models/rect';
-import { Point } from './models/point';
-import { Line } from './models/line';
-import { Node } from './models/node';
-import { Store } from 'le5le-store';
-import { Options } from './options';
-import { Lock } from './models/status';
-import { Layer } from './layer';
+import { TopologyData } from "./models/data";
+import { Rect } from "./models/rect";
+import { Point } from "./models/point";
+import { Line } from "./models/line";
+import { Node } from "./models/node";
+import { Pen, PenType } from "./models/pen";
+import { Store } from "le5le-store";
+import { Options } from "./options";
+import { Lock } from "./models/status";
+import { Layer } from "./layer";
 
 export class HoverLayer extends Layer {
   protected data: TopologyData;
@@ -31,11 +32,11 @@ export class HoverLayer extends Layer {
   dragRect: Rect;
   constructor(public options: Options = {}, TID: String) {
     super(TID);
-    this.data = Store.get(this.generateStoreKey('topology-data'));
-    Store.set(this.generateStoreKey('LT:HoverLayer'), this);
+    this.data = Store.get(this.generateStoreKey("topology-data"));
+    Store.set(this.generateStoreKey("LT:HoverLayer"), this);
   }
 
-  lineTo(to: Point, toArrow: string = 'triangleSolid') {
+  lineTo(to: Point, toArrow: string = "triangleSolid") {
     if (!this.line || this.line.locked) {
       return;
     }
@@ -43,8 +44,8 @@ export class HoverLayer extends Layer {
     if (this.line.from.id || this.line.to.id) {
       this.line.calcControlPoints();
     }
-    Store.set(this.generateStoreKey('pts-') + this.line.id, null);
-    Store.set(this.generateStoreKey('LT:updateLines'), [this.line]);
+    Store.set(this.generateStoreKey("pts-") + this.line.id, null);
+    Store.set(this.generateStoreKey("LT:updateLines"), [this.line]);
   }
 
   lineFrom(from: Point) {
@@ -56,24 +57,30 @@ export class HoverLayer extends Layer {
     if (this.line.from.id || this.line.to.id) {
       this.line.calcControlPoints();
     }
-    Store.set(this.generateStoreKey('pts-') + this.line.id, null);
-    Store.set(this.generateStoreKey('LT:updateLines'), [this.line]);
+    Store.set(this.generateStoreKey("pts-") + this.line.id, null);
+    Store.set(this.generateStoreKey("LT:updateLines"), [this.line]);
   }
 
-  lineMove(pt: Point, initPos: { x: number; y: number; }) {
+  lineMove(pt: Point, initPos: { x: number; y: number }) {
     if (this.line.locked) {
       return;
     }
     const x = pt.x - initPos.x;
     const y = pt.y - initPos.y;
-    this.line.setTo(new Point(this.initLine.to.x + x, this.initLine.to.y + y), this.line.toArrow);
-    this.line.setFrom(new Point(this.initLine.from.x + x, this.initLine.from.y + y), this.line.fromArrow);
+    this.line.setTo(
+      new Point(this.initLine.to.x + x, this.initLine.to.y + y),
+      this.line.toArrow
+    );
+    this.line.setFrom(
+      new Point(this.initLine.from.x + x, this.initLine.from.y + y),
+      this.line.fromArrow
+    );
     for (let i = 0; i < this.initLine.controlPoints.length; ++i) {
       this.line.controlPoints[i].x = this.initLine.controlPoints[i].x + x;
       this.line.controlPoints[i].y = this.initLine.controlPoints[i].y + y;
     }
-    Store.set(this.generateStoreKey('pts-') + this.line.id, null);
-    Store.set(this.generateStoreKey('LT:updateLines'), [this.line]);
+    Store.set(this.generateStoreKey("pts-") + this.line.id, null);
+    Store.set(this.generateStoreKey("LT:updateLines"), [this.line]);
   }
 
   render(ctx: CanvasRenderingContext2D) {
@@ -82,8 +89,30 @@ export class HoverLayer extends Layer {
     }
     ctx.save();
     ctx.strokeStyle = this.options.hoverColor;
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = "#fff";
     // anchors
+    if (this.options.alwaysAnchor) {
+      this.data.pens.forEach((pen: Pen) => {
+        if (pen.type === PenType.Line) {
+          return;
+        }
+
+        if (pen.hideAnchor) {
+          return;
+        }
+
+        for (const anchor of (pen as Node).rotatedAnchors) {
+          if (anchor.hidden) {
+            continue;
+          }
+          ctx.beginPath();
+          ctx.arc(anchor.x, anchor.y, this.anchorRadius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        }
+      });
+    }
+
     if (this.node && !this.data.locked) {
       if (!this.node.getTID()) {
         this.node.setTID(this.TID);
@@ -95,21 +124,38 @@ export class HoverLayer extends Layer {
         ctx.globalAlpha = 0.2;
         if (this.root.rotate) {
           ctx.translate(this.root.rect.center.x, this.root.rect.center.y);
-          ctx.rotate(((this.root.rotate + this.root.offsetRotate) * Math.PI) / 180);
+          ctx.rotate(
+            ((this.root.rotate + this.root.offsetRotate) * Math.PI) / 180
+          );
           ctx.translate(-this.root.rect.center.x, -this.root.rect.center.y);
         }
         ctx.beginPath();
-        ctx.strokeRect(this.root.rect.x, this.root.rect.y, this.root.rect.width, this.root.rect.height);
+        ctx.strokeRect(
+          this.root.rect.x,
+          this.root.rect.y,
+          this.root.rect.width,
+          this.root.rect.height
+        );
         ctx.restore();
       }
 
       if (!this.options.hideAnchor) {
         for (let i = 0; i < this.node.rotatedAnchors.length; ++i) {
-          if (this.node.locked || this.node.hideAnchor || (this.node.rotatedAnchors[i].hidden && this.hoverAnchorIndex !== i)) {
+          if (
+            this.node.locked ||
+            this.node.hideAnchor ||
+            (this.node.rotatedAnchors[i].hidden && this.hoverAnchorIndex !== i)
+          ) {
             continue;
           }
           ctx.beginPath();
-          ctx.arc(this.node.rotatedAnchors[i].x, this.node.rotatedAnchors[i].y, this.anchorRadius, 0, Math.PI * 2);
+          ctx.arc(
+            this.node.rotatedAnchors[i].x,
+            this.node.rotatedAnchors[i].y,
+            this.anchorRadius,
+            0,
+            Math.PI * 2
+          );
           ctx.fill();
           ctx.stroke();
         }
@@ -129,11 +175,11 @@ export class HoverLayer extends Layer {
       ctx.fill();
     }
 
-    ctx.strokeStyle = this.options.hoverColor + '80';
+    ctx.strokeStyle = this.options.hoverColor + "80";
     ctx.lineWidth = 1;
 
     if (this.dockLineX > 0) {
-      const size = Store.get(this.generateStoreKey('LT:size'));
+      const size = Store.get(this.generateStoreKey("LT:size"));
       ctx.beginPath();
       ctx.moveTo(this.dockLineX, 0);
       ctx.lineTo(this.dockLineX, size.height);
@@ -141,7 +187,7 @@ export class HoverLayer extends Layer {
     }
 
     if (this.dockLineY > 0) {
-      const size = Store.get(this.generateStoreKey('LT:size'));
+      const size = Store.get(this.generateStoreKey("LT:size"));
       ctx.beginPath();
       ctx.moveTo(0, this.dockLineY);
       ctx.lineTo(size.width, this.dockLineY);
@@ -150,11 +196,21 @@ export class HoverLayer extends Layer {
 
     // Select nodes by drag.
     if (this.dragRect) {
-      ctx.fillStyle = this.options.dragColor + '30';
+      ctx.fillStyle = this.options.dragColor + "30";
       ctx.strokeStyle = this.options.dragColor;
       ctx.beginPath();
-      ctx.strokeRect(this.dragRect.x, this.dragRect.y, this.dragRect.width, this.dragRect.height);
-      ctx.fillRect(this.dragRect.x, this.dragRect.y, this.dragRect.width, this.dragRect.height);
+      ctx.strokeRect(
+        this.dragRect.x,
+        this.dragRect.y,
+        this.dragRect.width,
+        this.dragRect.height
+      );
+      ctx.fillRect(
+        this.dragRect.x,
+        this.dragRect.y,
+        this.dragRect.width,
+        this.dragRect.height
+      );
     }
 
     ctx.restore();

@@ -15,7 +15,7 @@ export enum PenType {
 }
 
 export abstract class Pen {
-  private TID: String;
+  private TID: string;
   id = '';
   type = PenType.Node;
   name = '';
@@ -190,7 +190,7 @@ export abstract class Pen {
 
     // for canvas2svg
     if ((ctx as any).setAttrs) {
-      (ctx as any).setAttrs(this.data);
+      (ctx as any).setAttrs(this);
     }
 
     if (this.rotate || this.offsetRotate) {
@@ -293,19 +293,34 @@ export abstract class Pen {
     }
   }
 
-  doSocket(item: { type: EventType; action: EventAction; value: string; params: string; name?: string; }, msg: any, socket: WebSocket) {
-    if (item.action < EventAction.Function) {
-      this[this.eventFns[item.action]](msg.value || msg || item.value, msg.params || item.params, socket);
-    } else {
-      this[this.eventFns[item.action]](item.value, msg || item.params, socket);
-    }
-  }
-
-  doMqtt(item: { type: EventType; action: EventAction; value: string; params: string; name?: string; }, msg: any, client: any) {
+  doSocketMqtt(item: { type: EventType; action: EventAction; value: string; params: string; name?: string; }, msg: any, client: any) {
     if (item.action < EventAction.Function) {
       this[this.eventFns[item.action]](msg.value || msg || item.value, msg.params || item.params, client);
-    } else {
+    } else if (item.action < EventAction.SetProps) {
       this[this.eventFns[item.action]](item.value, msg || item.params, client);
+    } else if (item.action === EventAction.SetProps) {
+      let props: any[] = [];
+      let data = msg;
+      if (typeof msg === 'string') {
+        try {
+          data = JSON.parse(msg);
+        } catch (error) { }
+      }
+      if (Array.isArray(data)) {
+        props = data;
+      }
+
+      for (const prop of props) {
+        if (prop.key) {
+          if (typeof prop.value === 'object') {
+            this[prop.key] = Object.assign(this[prop.key], prop.value);
+          } else {
+            this[prop.key] = prop.value;
+          }
+        }
+      }
+
+      Store.set(this.generateStoreKey('LT:render'), true);
     }
   }
 

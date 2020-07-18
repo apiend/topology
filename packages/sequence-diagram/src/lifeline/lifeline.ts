@@ -2,8 +2,12 @@ import { Node } from '@topology/core';
 
 export function lifeline(ctx: CanvasRenderingContext2D, node: Node) {
   const height = 50;
-  const wr = node.rect.width * node.borderRadius;
-  const hr = height * node.borderRadius;
+  let wr = node.borderRadius;
+  let hr = node.borderRadius;
+  if (node.borderRadius < 1) {
+    wr = node.rect.width * node.borderRadius;
+    hr = node.rect.height * node.borderRadius;
+  }
   let r = wr < hr ? wr : hr;
   if (node.rect.width < 2 * r) {
     r = node.rect.width / 2;

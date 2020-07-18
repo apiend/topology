@@ -9,5 +9,6 @@ export enum EventAction {
   Link,
   Animate,
   Function,
-  WindowFn
+  WindowFn,
+  SetProps
 }

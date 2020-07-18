@@ -100,9 +100,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       });
 
       this.canvasHeight = this.canvas.canvas.height;
-      // For debug
-      (window as any).canvas = this.canvas;
-      // End
     });
 
     this.service.canvasRegister();
@@ -539,7 +536,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         Store.set('locked', data);
         break;
     }
-    // console.log('onMessage:', event, data);
+    console.log('onMessage:', event, data);
   };
 
   onSignup() {

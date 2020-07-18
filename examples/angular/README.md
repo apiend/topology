@@ -16,23 +16,14 @@ Topology-angular is the angular app for topology.
 $ yarn
 $ yarn start
 
+
+# debug online
+# host：127.0.0.1 local.le5le.com
+$ yarn le5le
+
 # build
 $ yarn build
 
-```
-
-## http proxy on localhost
-
-```
-# First, set your host: 127.0.0.1 local.dev.le5le.com
-$ yarn dev
-```
-
-## http proxy on topology.le5le.com
-
-```
-# First, set your host: 127.0.0.1 local.le5le.com
-$ yarn prod
 ```
 
 # License
