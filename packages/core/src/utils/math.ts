@@ -21,7 +21,7 @@ export function pSBC(p: any, c0: any, c1?: any, l?: any) {
   ) {
     return null;
   }
-  const pSBCr = d => {
+  const pSBCr = (d) => {
     let n = d.length;
     const x: any = {};
     if (n > 9) {
@@ -86,4 +86,10 @@ export function abs(num: number, percent: number | string): number {
   percent = (percent as string).substr(0, (percent as string).length - 1);
 
   return (num * +percent) / 100;
+}
+
+export function distance(pt1: { x: number; y: number }, pt2: { x: number; y: number }) {
+  const x = pt1.x - pt2.x;
+  const y = pt1.y - pt2.y;
+  return Math.sqrt(x * x + y * y);
 }

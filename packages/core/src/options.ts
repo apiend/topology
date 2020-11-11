@@ -3,7 +3,7 @@ export enum KeyType {
   CtrlOrAlt,
   Ctrl,
   Shift,
-  Alt
+  Alt,
 }
 
 export enum KeydownType {
@@ -11,6 +11,8 @@ export enum KeydownType {
   Document,
   Canvas,
 }
+
+export type Padding = number | string | number[];
 
 export interface Options {
   cacheLen?: number;
@@ -20,6 +22,10 @@ export interface Options {
   color?: string;
   activeColor?: string;
   hoverColor?: string;
+  anchorRadius?: number;
+  anchorFillStyle?: string;
+  dockStrokeStyle?: string;
+  dockFillStyle?: string;
   dragColor?: string;
   animateColor?: string;
   font?: {
@@ -38,8 +44,11 @@ export interface Options {
   hideAnchor?: boolean;
   onlySizeX?: boolean;
   onlySizeY?: boolean;
+  anchorSize?: number;
   alwaysAnchor?: boolean;
+  autoAnchor?: boolean;
   disableEmptyLine?: boolean;
+  disableRepeatLine?: boolean;
   disableScale?: boolean;
   disableMoveOutParent?: boolean;
   disableDockLine?: boolean;
@@ -51,7 +60,9 @@ export interface Options {
   scaleKey?: KeyType;
   minScale?: number;
   maxScale?: number;
+  autoExpandDistance?: number;
   keydown?: KeydownType;
+  viewPadding?: Padding;
   on?: (event: string, data: any) => void;
 }
 
@@ -63,15 +74,23 @@ export const DefalutOptions: Options = {
     fontSize: 12,
     lineHeight: 1.5,
     textAlign: 'center',
-    textBaseline: 'middle'
+    textBaseline: 'middle',
   },
   color: '#222',
-  hoverColor: '#fa541c',
-  dragColor: '#1890ff',
   activeColor: '#1890ff',
+  hoverColor: '#fa541c',
+  anchorRadius: 4,
+  anchorFillStyle: '#fff',
+  dockStrokeStyle: '#fa541c',
+  dockFillStyle: '#fa541c',
+  dragColor: '#1890ff',
   rotateCursor: '/assets/img/rotate.cur',
   hoverCursor: 'pointer',
   minScale: 0.25,
   maxScale: 5,
-  keydown: KeydownType.Document
+  anchorSize: 5,
+  autoExpandDistance: 200,
+  keydown: KeydownType.Document,
+  viewPadding: 0,
+  autoAnchor: true,
 };

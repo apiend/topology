@@ -6,7 +6,11 @@ export class Point {
   id: number | string;
   direction: Direction;
   // The index of docker anchor on node.
+  radius: number;
+  strokeStyle: string;
+  fillStyle: string;
   anchorIndex: number;
+  autoAnchor: boolean;
 
   hidden: boolean;
   mode: AnchorMode;
@@ -37,6 +41,7 @@ export class Point {
 
   clone(): Point {
     const pt = new Point(this.x, this.y, this.direction, this.anchorIndex, this.id, this.hidden);
+    pt.autoAnchor = this.autoAnchor;
     if (this.data) {
       pt.data = this.data;
     }
@@ -50,7 +55,7 @@ export class Point {
     return pt.x > this.x - radius && pt.x < this.x + radius && pt.y > this.y - radius && pt.y < this.y + radius;
   }
 
-  rotate(angle: number, center: { x: number; y: number; }): Point {
+  rotate(angle: number, center: { x: number; y: number }): Point {
     if (!angle || angle === 360) {
       return this;
     }
@@ -61,5 +66,9 @@ export class Point {
     this.x = x;
     this.y = y;
     return this;
+  }
+
+  isSameAs(pt: Point) {
+    return this.anchorIndex === pt.anchorIndex && this.direction === pt.direction && this.id === pt.id;
   }
 }

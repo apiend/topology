@@ -51,9 +51,7 @@ export function getLines(ctx: CanvasRenderingContext2D, words: string[], maxWidt
   return lines;
 }
 
-function textBk(ctx: CanvasRenderingContext2D, str: string, x: number,
-  y: number,
-  height: number, color?: string) {
+function textBk(ctx: CanvasRenderingContext2D, str: string, x: number, y: number, height: number, color?: string) {
   if (!str || !color) {
     return;
   }
@@ -128,6 +126,9 @@ export function text(ctx: CanvasRenderingContext2D, node: Node | Line) {
   if (!node.text) {
     return;
   }
+  if (!node.text.split) {
+    node.text += '';
+  }
 
   ctx.save();
   ctx.beginPath();
@@ -135,7 +136,7 @@ export function text(ctx: CanvasRenderingContext2D, node: Node | Line) {
   delete ctx.shadowBlur;
   ctx.font = `${node.font.fontStyle || 'normal'} normal ${node.font.fontWeight || 'normal'} ${node.font.fontSize}px/${
     node.font.lineHeight
-    } ${node.font.fontFamily}`;
+  } ${node.font.fontFamily}`;
 
   if (node.font.color) {
     ctx.fillStyle = node.font.color;
@@ -151,7 +152,7 @@ export function text(ctx: CanvasRenderingContext2D, node: Node | Line) {
 
   const textRect = node.getTextRect();
   const lines = [];
-  const paragraphs = node.text.split(/[\n,]/g);
+  const paragraphs = node.text.split(/[\n]/g);
   for (let i = 0; i < paragraphs.length; ++i) {
     const l = getLines(ctx, getWords(paragraphs[i]), textRect.width, node.font.fontSize);
     lines.push.apply(lines, l);
@@ -183,9 +184,17 @@ export function text(ctx: CanvasRenderingContext2D, node: Node | Line) {
       y = textRect.ey - lineHeight * lines.length + lineHeight;
       break;
   }
-  fillText(ctx, lines,
-    x + node.textOffsetX, y + node.textOffsetY, textRect.width, textRect.height, lineHeight, maxLineLen,
-    node.font.background);
+  fillText(
+    ctx,
+    lines,
+    x + node.textOffsetX,
+    y + node.textOffsetY,
+    textRect.width,
+    textRect.height,
+    lineHeight,
+    maxLineLen,
+    node.font.background
+  );
   ctx.restore();
 }
 

@@ -7,10 +7,12 @@ import { defaultAnchors } from '../middles/default.anchor';
 import { defaultIconRect, defaultTextRect } from '../middles/default.rect';
 import { text, iconfont } from '../middles/nodes/text';
 import { Store } from 'le5le-store';
-import { abs } from '../utils/math';
+import { abs, distance } from '../utils/math';
 import { s8 } from '../utils/uuid';
 
-export const images: { [key: string]: { img: HTMLImageElement; cnt: number; }; } = {};
+export const images: {
+  [key: string]: { img: HTMLImageElement; cnt: number };
+} = {};
 
 export class Node extends Pen {
   is3D = false;
@@ -152,7 +154,7 @@ export class Node extends Pen {
         marginRight: 0,
         marginBottom: 0,
         marginLeft: 0,
-        rotate: json.parentRect.rotate
+        rotate: json.parentRect.rotate,
       };
       this.paddingTop = json.parentRect.marginY;
       this.paddingBottom = json.parentRect.marginY;
@@ -293,7 +295,6 @@ export class Node extends Pen {
     }
   }
 
-
   draw(ctx: CanvasRenderingContext2D) {
     if (!drawNodeFns[this.name]) {
       return;
@@ -385,7 +386,6 @@ export class Node extends Pen {
       this.img = null;
     }
 
-
     const gif = this.image.indexOf('.gif') > 0;
 
     if (!gif && this.img) {
@@ -472,7 +472,7 @@ export class Node extends Pen {
       this.img = img;
       images[this.image] = {
         img,
-        cnt: 1
+        cnt: 1,
       };
       Store.set(this.generateStoreKey('LT:imageLoaded'), true);
       if (!this.gif && gif) {
@@ -520,7 +520,6 @@ export class Node extends Pen {
 
     return rect;
   }
-
 
   // 根据父节点rect计算自己（子节点）的rect
   calcRectByParent(parent: Pen) {
@@ -578,12 +577,12 @@ export class Node extends Pen {
     const parentW = parent.rect.width - parent.paddingLeftNum - parent.paddingRightNum;
     const parentH = parent.rect.height - parent.paddingTopNum - parent.paddingBottomNum;
     this.rectInParent = {
-      x: ((this.rect.x - parent.rect.x - parent.paddingLeftNum) * 100 / parentW) + '%',
-      y: ((this.rect.y - parent.rect.y - parent.paddingTopNum) * 100 / parentH) + '%',
-      width: (this.rect.width * 100 / parentW) + '%',
-      height: (this.rect.height * 100 / parentH) + '%',
-      rotate: this.rectInParent ? (this.rectInParent.rotate || 0) : (this.rotate || 0),
-      rect: this.rect.clone()
+      x: ((this.rect.x - parent.rect.x - parent.paddingLeftNum) * 100) / parentW + '%',
+      y: ((this.rect.y - parent.rect.y - parent.paddingTopNum) * 100) / parentH + '%',
+      width: (this.rect.width * 100) / parentW + '%',
+      height: (this.rect.height * 100) / parentH + '%',
+      rotate: this.rectInParent ? this.rectInParent.rotate || 0 : this.rotate || 0,
+      rect: this.rect.clone(),
     };
   }
 
@@ -613,6 +612,7 @@ export class Node extends Pen {
           this.dash = item.state.dash;
           this.strokeStyle = item.state.strokeStyle;
           this.fillStyle = item.state.fillStyle;
+          this.text = item.state.text;
           this.font = item.state.font;
 
           this.lineWidth = item.state.lineWidth;
@@ -626,7 +626,7 @@ export class Node extends Pen {
         }
         Store.set(this.generateStoreKey('animateEnd'), {
           type: 'node',
-          data: this
+          data: this,
         });
         return;
       }
@@ -641,6 +641,7 @@ export class Node extends Pen {
         this.dash = item.state.dash;
         this.strokeStyle = item.state.strokeStyle;
         this.fillStyle = item.state.fillStyle;
+        this.text = item.state.text;
         this.font = item.state.font;
 
         const rate = (timeline - item.start) / item.duration;
@@ -732,9 +733,49 @@ export class Node extends Pen {
     if (this.imageHeight) {
       this.imageHeight *= scale;
     }
+    this.lastImage = null;
     this.font.fontSize *= scale;
-    this.font.lineHeight *= scale;
     this.iconSize *= scale;
+    if (typeof this.paddingLeft === 'number') {
+      this.paddingLeft *= scale;
+    }
+    if (typeof this.paddingTop === 'number') {
+      this.paddingTop *= scale;
+    }
+    if (typeof this.paddingRight === 'number') {
+      this.paddingRight *= scale;
+    }
+    if (typeof this.paddingBottom === 'number') {
+      this.paddingBottom *= scale;
+    }
+
+    if (this.rectInParent) {
+      if (typeof this.rectInParent.x === 'number') {
+        this.rectInParent.x *= scale;
+      }
+      if (typeof this.rectInParent.y === 'number') {
+        this.rectInParent.y *= scale;
+      }
+      if (typeof this.rectInParent.width === 'number') {
+        this.rectInParent.width *= scale;
+      }
+      if (typeof this.rectInParent.height === 'number') {
+        this.rectInParent.height *= scale;
+      }
+      if (typeof this.rectInParent.marginLeft === 'number') {
+        this.rectInParent.marginLeft *= scale;
+      }
+      if (typeof this.rectInParent.marginTop === 'number') {
+        this.rectInParent.marginTop *= scale;
+      }
+      if (typeof this.rectInParent.marginRight === 'number') {
+        this.rectInParent.marginRight *= scale;
+      }
+      if (typeof this.rectInParent.marginBottom === 'number') {
+        this.rectInParent.marginBottom *= scale;
+      }
+    }
+
     this.rect.calcCenter();
 
     if (this.animateFrames && this.animateFrames.length) {
@@ -798,6 +839,23 @@ export class Node extends Pen {
         }
       }
     }
+  }
+
+  nearestAnchor(pt: Point) {
+    let dis = 99999;
+    let index = 0;
+    for (let i = 0; i < this.rotatedAnchors.length; ++i) {
+      const d = distance(pt, this.rotatedAnchors[i]);
+      if (dis > d) {
+        dis = d;
+        index = i;
+      }
+    }
+
+    return {
+      index,
+      direction: this.rotatedAnchors[index].direction,
+    };
   }
 
   round() {

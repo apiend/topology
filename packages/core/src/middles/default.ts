@@ -249,7 +249,7 @@ export function registerNode(
   anchorsFn?: (node: Node) => void,
   iconRectFn?: (node: Node) => void,
   textRectFn?: (node: Node) => void,
-  force?: boolean
+  force = true
 ) {
   // Exist
   if (drawNodeFns[name] && !force) {
@@ -278,7 +278,7 @@ export function registerLine(
   controlPointsFn?: (line: Line) => void,
   dockControlPointFn?: (point: Point, line: Line) => void,
   pointInFn?: (point: Point, line: Line) => boolean,
-  force?: boolean
+  force = true
 ) {
   // Exist
   if (drawLineFns[name] && !force) {
@@ -302,7 +302,7 @@ export function registerLine(
 export function registerArrow(
   name: string,
   drawFn: (ctx: CanvasRenderingContext2D, from: Point, to: Point, size: number) => void,
-  force?: boolean
+  force = true
 ) {
   // Exist
   if (drawArrowFns[name] && !force) {

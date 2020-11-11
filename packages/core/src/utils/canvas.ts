@@ -1,20 +1,30 @@
 import { Point } from '../models/point';
 import { Pen } from '../models/pen';
 import { Node } from '../models/node';
+import { Line } from '../models/line';
 
-export function flatNodes(nodes: Pen[]): Node[] {
-  const result: Node[] = [];
+export function flatNodes(
+  nodes: Pen[]
+): {
+  nodes: Node[];
+  lines: Line[];
+} {
+  const result = {
+    nodes: [],
+    lines: [],
+  };
 
   for (const item of nodes) {
     if (item.type) {
+      result.lines.push(item);
       continue;
     }
-    result.push(item as Node);
+    result.nodes.push(item);
     if ((item as Node).children) {
-      result.push.apply(result, flatNodes((item as Node).children));
+      result.nodes.push.apply(result.nodes, flatNodes((item as Node).children).nodes);
+      result.lines.push.apply(result.lines, flatNodes((item as Node).children).lines);
     }
   }
-
   return result;
 }
 
@@ -48,7 +58,6 @@ export function getParent(pens: Pen[], child: Node): Node {
   return parent;
 }
 
-
 export function pointInRect(point: Point, vertices: Point[]): boolean {
   if (vertices.length < 3) {
     return false;
@@ -74,7 +83,7 @@ export function pointInLine(point: Point, from: Point, to: Point): boolean {
     new Point(from.x - 8, from.y - 8),
     new Point(to.x - 8, to.y - 8),
     new Point(to.x + 8, to.y + 8),
-    new Point(from.x + 8, from.y + 8)
+    new Point(from.x + 8, from.y + 8),
   ];
 
   return pointInRect(point, points);

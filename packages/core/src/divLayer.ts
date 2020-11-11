@@ -17,11 +17,11 @@ export class DivLayer extends Layer {
   progress: HTMLElement;
   loop: HTMLElement;
   media: HTMLMediaElement;
-  videos: { [key: string]: { player: HTMLElement; current: HTMLElement; media: HTMLMediaElement; }; } = {};
-  audios: { [key: string]: { player: HTMLElement; current: HTMLElement; media: HTMLMediaElement; }; } = {};
-  iframes: { [key: string]: HTMLIFrameElement; } = {};
-  elements: { [key: string]: HTMLElement; } = {};
-  gifs: { [key: string]: HTMLImageElement; } = {};
+  videos: { [key: string]: { player: HTMLElement; current: HTMLElement; media: HTMLMediaElement } } = {};
+  audios: { [key: string]: { player: HTMLElement; current: HTMLElement; media: HTMLMediaElement } } = {};
+  iframes: { [key: string]: HTMLIFrameElement } = {};
+  elements: { [key: string]: HTMLElement } = {};
+  gifs: { [key: string]: HTMLImageElement } = {};
 
   private subcribe: Observer;
   private subcribeNode: Observer;
@@ -67,8 +67,9 @@ export class DivLayer extends Layer {
       }
 
       this.curNode = node;
-      this.player.style.top = this.parentElem.offsetTop + this.parentElem.clientHeight + 'px';
-      this.player.style.left = this.parentElem.getBoundingClientRect().left + 'px';
+      const rect = this.parentElem.getBoundingClientRect();
+      this.player.style.top = rect.top + this.parentElem.clientHeight - 40 + 'px';
+      this.player.style.left = rect.left + 'px';
       this.player.style.width = this.parentElem.clientWidth + 'px';
       this.getMediaCurrent();
       if (this.media.paused) {
@@ -78,7 +79,7 @@ export class DivLayer extends Layer {
       }
     });
 
-    document.addEventListener('fullscreenchange', e => {
+    document.addEventListener('fullscreenchange', (e) => {
       if (!this.media) {
         return;
       }
@@ -307,7 +308,7 @@ export class DivLayer extends Layer {
     this[type + 's'][node.id] = {
       player,
       current,
-      media
+      media,
     };
     this.canvas.appendChild(player);
 
@@ -446,7 +447,7 @@ export class DivLayer extends Layer {
     return txt;
   }
 
-  resize(size?: { width: number; height: number; }) {
+  resize(size?: { width: number; height: number }) {
     if (size) {
       this.canvas.style.width = size.width + 'px';
       this.canvas.style.height = size.height + 'px';

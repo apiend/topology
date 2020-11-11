@@ -7,8 +7,8 @@ import { s8 } from '../utils';
 export class TopologyData {
   pens: Pen[] = [];
   lineName = 'curve';
-  fromArrowType = '';
-  toArrowType = 'triangleSolid';
+  fromArrow = '';
+  toArrow = 'triangleSolid';
   scale = 1;
   locked = Lock.None;
   bkImage: string;
@@ -17,14 +17,15 @@ export class TopologyData {
   websocket?: string;
   mqttUrl?: string;
   mqttOptions?: {
-    clientId?: string,
-    username?: string,
-    password?: string,
+    clientId?: string;
+    username?: string;
+    password?: string;
   } = {
-      clientId: s8()
-    };
+    clientId: s8(),
+  };
   mqttTopics?: string;
   manualCps?: boolean;
+  tooltip?: boolean | number;
   data?: any;
   constructor(json?: any) {
     if (json) {
@@ -37,8 +38,8 @@ export class TopologyData {
         }
       }
       this.lineName = json.lineName || 'curve';
-      this.fromArrowType = json.fromArrowType || '';
-      this.toArrowType = json.toArrowType || 'triangleSolid';
+      this.fromArrow = json.fromArrow || '';
+      this.toArrow = json.toArrow || 'triangleSolid';
       this.scale = json.scale || 1;
       this.locked = json.locked || Lock.None;
       this.bkImage = json.bkImage;
