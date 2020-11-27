@@ -21,12 +21,14 @@ export class Point {
     direction?: Direction,
     anchorIndex?: number,
     id?: number | string,
-    hidden?: boolean
+    hidden?: boolean,
+    autoAnchor?: boolean
   ) {
     this.direction = direction;
     this.anchorIndex = anchorIndex;
     this.id = id;
     this.hidden = hidden;
+    this.autoAnchor = autoAnchor;
   }
 
   floor() {
@@ -40,8 +42,7 @@ export class Point {
   }
 
   clone(): Point {
-    const pt = new Point(this.x, this.y, this.direction, this.anchorIndex, this.id, this.hidden);
-    pt.autoAnchor = this.autoAnchor;
+    const pt = new Point(this.x, this.y, this.direction, this.anchorIndex, this.id, this.hidden, this.autoAnchor);
     if (this.data) {
       pt.data = this.data;
     }

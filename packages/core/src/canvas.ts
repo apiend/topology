@@ -28,10 +28,14 @@ export class Canvas extends Layer {
         }
       }
       Canvas.dpiRatio = window.devicePixelRatio + options.extDpiRatio;
+
+      if (Canvas.dpiRatio < 1) {
+        Canvas.dpiRatio = 1;
+      }
     }
   }
 
-  resize(size?: { width: number; height: number; }) {
+  resize(size?: { width: number; height: number }) {
     if (size) {
       this.width = size.width | 0;
       this.height = size.height | 0;

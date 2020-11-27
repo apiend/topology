@@ -47,10 +47,17 @@ export class Line extends Pen {
     this.type = PenType.Line;
     if (json) {
       if (json.from) {
-        this.from = new Point(json.from.x, json.from.y, json.from.direction, json.from.anchorIndex, json.from.id);
+        this.from = new Point(
+          json.from.x,
+          json.from.y,
+          json.from.direction,
+          json.from.anchorIndex,
+          json.from.id,
+          json.autoAnchor
+        );
       }
       if (json.to) {
-        this.to = new Point(json.to.x, json.to.y, json.to.direction, json.to.anchorIndex, json.to.id);
+        this.to = new Point(json.to.x, json.to.y, json.to.direction, json.to.anchorIndex, json.to.id, json.autoAnchor);
       }
 
       this.fromArrow = json.fromArrow || '';
@@ -70,6 +77,12 @@ export class Line extends Pen {
       }
       if (json.animateLineDash) {
         this.animateLineDash = json.animateLineDash;
+      }
+      if (json.animatePlay) {
+        this.animatePlay = json.animatePlay;
+      }
+      if (json.animateStart) {
+        this.animateStart = json.animateStart;
       }
       if (json.length) {
         this.length = json.length;
@@ -482,6 +495,12 @@ export class Line extends Pen {
     }
 
     Store.set(this.generateStoreKey('pts-') + this.id, null);
+  }
+
+  hit(pt: Point, padding = 0): any {
+    if (this.from.hit(pt, padding) || this.to.hit(pt, padding)) {
+      return this;
+    }
   }
 
   clone() {

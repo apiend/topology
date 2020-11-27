@@ -3,7 +3,6 @@ import { Store } from 'le5le-store';
 import { s8 } from '../utils/uuid';
 import { Point } from './point';
 import { Rect } from './rect';
-import { pointInRect } from '../utils/canvas';
 import { EventType, EventAction } from './event';
 
 import { Lock } from './status';
@@ -252,18 +251,6 @@ export abstract class Pen {
     }
   }
 
-  hit(point: Point, padding = 0) {
-    if (this.rotate % 360 === 0) {
-      return this.rect.hit(point, padding);
-    }
-
-    const pts = this.rect.toPoints();
-    for (const pt of pts) {
-      pt.rotate(this.rotate, this.rect.center);
-    }
-    return pointInRect(point, pts);
-  }
-
   click() {
     if (!this.events) {
       return;
@@ -315,10 +302,20 @@ export abstract class Pen {
 
       for (const prop of props) {
         if (prop.key) {
+          const keys = prop.key.split('.');
+
           if (typeof prop.value === 'object') {
-            this[prop.key] = Object.assign(this[prop.key], prop.value);
+            if (keys[1]) {
+              this[keys[0]][keys[1]] = Object.assign(this[prop.key], prop.value);
+            } else {
+              this[keys[0]] = Object.assign(this[prop.key], prop.value);
+            }
           } else {
-            this[prop.key] = prop.value;
+            if (keys[1]) {
+              this[keys[0]][keys[1]] = prop.value;
+            } else {
+              this[keys[0]] = prop.value;
+            }
           }
         }
       }
@@ -392,5 +389,6 @@ export abstract class Pen {
   abstract animate(now: number): void;
   abstract translate(x: number, y: number): void;
   abstract scale(scale: number, center?: Point): void;
+  abstract hit(point: Point, padding?: number): any;
   abstract clone(): Pen;
 }

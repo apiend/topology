@@ -194,7 +194,7 @@ export class AnimateLayer extends Layer {
       }
 
       for (const item of lines) {
-        if (line.id === item.id) {
+        if (line.data === item.id) {
           line.from = item.from;
           line.to = item.to;
           line.controlPoints = item.controlPoints;
