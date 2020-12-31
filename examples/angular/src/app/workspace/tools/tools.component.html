@@ -56,7 +56,7 @@
           [title]="button.name"
           [draggable]="button.data"
           (dragstart)="onDrag($event, button, true)"
-          (touchstart)="onTouchstart(button)"
+          (touchstart)="onTouchstart(button, true)"
         ></div>
       </ng-container>
     </div>

@@ -304,8 +304,8 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     }
     this.data = ret;
     Store.set('lineName', ret.data.lineName);
-    Store.set('fromArrowType', ret.data.fromArrowType);
-    Store.set('toArrowType', ret.data.toArrowType);
+    Store.set('fromArrow', ret.data.fromArrow);
+    Store.set('toArrow', ret.data.toArrow);
     Store.set('scale', ret.data.scale);
     Store.set('locked', ret.data.locked);
     this.canvas.open(ret.data);
@@ -340,8 +340,8 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         const data = JSON.parse(text);
         if (data && data.lineName) {
           Store.set('lineName', data.lineName);
-          Store.set('fromArrowType', data.fromArrowType);
-          Store.set('toArrowType', data.toArrowType);
+          Store.set('fromArrow', data.fromArrow);
+          Store.set('toArrow', data.toArrow);
           this.data = {
             id: '',
             version: '',

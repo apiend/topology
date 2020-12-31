@@ -10,11 +10,16 @@ export class TopologyData {
   lineName = 'curve';
   fromArrow = '';
   toArrow = 'triangleSolid';
+  lineWidth?: number;
   scale = 1;
   locked = Lock.None;
   bkImage: string;
   bkColor: string;
   grid?: boolean;
+  gridColor?: string;
+  gridSize?: number;
+  rule?: boolean;
+  ruleColor?: string;
   websocket?: string;
   mqttUrl?: string;
   mqttOptions?: {

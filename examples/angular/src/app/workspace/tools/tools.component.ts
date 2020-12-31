@@ -138,8 +138,18 @@ export class ToolsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onTouchstart(item: any) {
-    // this.canvas.touchedNode = item.data;
+  onTouchstart(node: any, fn?: boolean) {
+    if (fn) {
+      (window as any).topology.touchedNode = {
+        name: node.fullname,
+        rect: {
+          width: 100,
+          height: (100 * node.data.rect.height) / node.data.rect.width,
+        },
+      };
+    } else {
+      (window as any).topology.touchedNode = node.componentData || node.data;
+    }
   }
 
   onEditComponent(name: string, id: string = '') {

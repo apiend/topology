@@ -1,6 +1,8 @@
 import * as mqtt from './mqtt.min.js';
 
 import { EventAction, EventType, TopologyData } from './models';
+import { Pen, PenType } from './models/pen';
+import { Node } from './models/node';
 import { Store } from 'le5le-store';
 import { find } from './utils/index';
 
@@ -29,13 +31,20 @@ export class MQTT {
       this.data.events.forEach((event, index) => {
         if (event.type === EventType.Mqtt) {
           if (event.name && topic.indexOf(event.name) > -1) {
-            this.doSocketMqtt(index, event, message.toString(), this.client);
+            this.topologyMqtt(index, event, message.toString(), this.client);
           }
         }
       });
     }
 
-    for (const item of this.data.pens) {
+    this.pensMqtt(this.data.pens, topic, message);
+  };
+
+  pensMqtt(pens: Pen[], topic: string, message: any) {
+    if (!pens) {
+      return;
+    }
+    for (const item of pens) {
       for (const event of item.events) {
         if (event.type === EventType.Mqtt) {
           if (event.name && topic.indexOf(event.name) > -1) {
@@ -43,10 +52,14 @@ export class MQTT {
           }
         }
       }
-    }
-  };
 
-  doSocketMqtt(
+      if (item.type === PenType.Node) {
+        this.pensMqtt((item as Node).children, topic, message);
+      }
+    }
+  }
+
+  topologyMqtt(
     index: number,
     item: { type: EventType; action: EventAction; value: string; params: string; name?: string },
     msg: any,

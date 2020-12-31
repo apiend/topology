@@ -26,7 +26,7 @@ export class Line extends Pen {
 
   animateColor = '';
   animateSpan = 1;
-  animatePos = 0;
+
   animateLineDash: number[];
 
   isAnimate = false;
@@ -68,9 +68,6 @@ export class Line extends Pen {
       this.toArrowColor = json.toArrowColor;
       if (json.animateColor) {
         this.animateColor = json.animateColor;
-      }
-      if (json.animatePos) {
-        this.animatePos = json.animatePos;
       }
       if (json.animateSpan) {
         this.animateSpan = json.animateSpan;
@@ -246,7 +243,7 @@ export class Line extends Pen {
     }
   }
 
-  pointIn(pt: Point) {
+  pointIn(pt: { x: number; y: number }) {
     return drawLineFns[this.name].pointIn(pt, this);
   }
 
@@ -399,6 +396,22 @@ export class Line extends Pen {
     this.translate(x - this.from.x, y - this.from.y);
   }
 
+  initAnimate() {
+    this.animatePos = 0;
+  }
+
+  pauseAnimate() {
+    Store.set(this.generateStoreKey('LT:AnimatePlay'), {
+      pen: this,
+      stop: true,
+    });
+  }
+
+  stopAnimate() {
+    this.pauseAnimate();
+    this.initAnimate();
+  }
+
   animate(now: number) {
     if (this.animateFromSize) {
       this.lineDashOffset = -this.animateFromSize;
@@ -431,6 +444,7 @@ export class Line extends Pen {
     if (this.animatePos > this.length + this.animateSpan - this.animateFromSize - this.animateToSize) {
       if (++this.animateCycleIndex >= this.animateCycle && this.animateCycle > 0) {
         this.animateStart = 0;
+        this.animatePos = 0;
         Store.set(this.generateStoreKey('animateEnd'), {
           type: 'line',
           data: this,
@@ -484,8 +498,8 @@ export class Line extends Pen {
     this.to.y = center.y - (center.y - this.to.y) * scale;
     this.lineWidth *= scale;
     this.borderWidth *= scale;
-    if (this.text && this.font && this.font.fontSize) {
-      this.font.fontSize *= scale;
+    this.font.fontSize *= scale;
+    if (this.text) {
       this.textRect = null;
     }
 

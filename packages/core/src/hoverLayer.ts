@@ -8,6 +8,7 @@ import { Store } from 'le5le-store';
 import { Options } from './options';
 import { Lock } from './models/status';
 import { Layer } from './layer';
+import { rgba } from './utils/math';
 
 export class HoverLayer extends Layer {
   protected data: TopologyData;
@@ -28,7 +29,7 @@ export class HoverLayer extends Layer {
 
   root: Node;
   dragRect: Rect;
-  constructor(public options: Options = {}, TID: String) {
+  constructor(public options: Options = {}, TID: string) {
     super(TID);
     this.data = Store.get(this.generateStoreKey('topology-data'));
     Store.set(this.generateStoreKey('LT:HoverLayer'), this);
@@ -59,7 +60,7 @@ export class HoverLayer extends Layer {
     Store.set(this.generateStoreKey('LT:updateLines'), [this.line]);
   }
 
-  lineMove(pt: Point, initPos: { x: number; y: number }) {
+  lineMove(pt: { x: number; y: number }, initPos: { x: number; y: number }) {
     if (this.line.locked) {
       return;
     }
@@ -206,7 +207,7 @@ export class HoverLayer extends Layer {
       ctx.fill();
     }
 
-    ctx.strokeStyle = this.options.hoverColor + '80';
+    ctx.strokeStyle = rgba(0.5, this.options.hoverColor);
     ctx.lineWidth = 1;
 
     if (this.dockLineX > 0) {
@@ -227,7 +228,7 @@ export class HoverLayer extends Layer {
 
     // Select nodes by drag.
     if (this.dragRect) {
-      ctx.fillStyle = this.options.dragColor + '30';
+      ctx.fillStyle = rgba(0.2, this.options.dragColor);
       ctx.strokeStyle = this.options.dragColor;
       ctx.beginPath();
       ctx.strokeRect(this.dragRect.x, this.dragRect.y, this.dragRect.width, this.dragRect.height);

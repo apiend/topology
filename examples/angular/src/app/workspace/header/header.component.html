@@ -199,14 +199,14 @@
     </div>
     <div class="item lines">
       <a>
-        <i class="iconfont icon-from-{{ data.fromArrowType }}" style="position: relative;top: .06rem;"></i>
+        <i class="iconfont icon-from-{{ data.fromArrow }}" style="position: relative;top: .06rem;"></i>
       </a>
       <div class="dropdown">
         <div class="item">
           默认起点箭头：
         </div>
         <div class="item" *ngFor="let item of arrowTypes">
-          <a (click)="data.fromArrowType=item">
+          <a (click)="data.fromArrow=item">
             <i class="iconfont icon-from-{{ item }}"></i>
           </a>
         </div>
@@ -214,14 +214,14 @@
     </div>
     <div class="item lines">
       <a>
-        <i class="iconfont icon-to-{{ data.toArrowType }}" style="position: relative;top: .06rem;"></i>
+        <i class="iconfont icon-to-{{ data.toArrow }}" style="position: relative;top: .06rem;"></i>
       </a>
       <div class="dropdown">
         <div class="item">
           默认终点箭头：
         </div>
         <div class="item" *ngFor="let item of arrowTypes">
-          <a (click)="data.toArrowType=item">
+          <a (click)="data.toArrow=item">
             <i class="iconfont icon-to-{{ item }}"></i>
           </a>
         </div>

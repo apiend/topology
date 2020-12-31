@@ -1,5 +1,7 @@
 import { Store } from 'le5le-store';
 import { EventAction, EventType, TopologyData } from './models';
+import { Pen, PenType } from './models/pen';
+import { Node } from './models/node';
 import { find } from './utils/canvas';
 
 export class Socket {
@@ -35,15 +37,23 @@ export class Socket {
       this.data.events.forEach((event, index) => {
         if (event.type === EventType.WebSocket) {
           if (event.name && event.name === msg.event) {
-            this.doSocketMqtt(index, event, msg.data, this.socket);
+            this.topologyMqtt(index, event, msg.data, this.socket);
           } else if (!event.name && msg) {
-            this.doSocketMqtt(index, event, msg, this.socket);
+            this.topologyMqtt(index, event, msg, this.socket);
           }
         }
       });
     }
 
-    for (const item of this.data.pens) {
+    this.pensMqtt(this.data.pens, msg);
+  };
+
+  pensMqtt(pens: Pen[], msg: any) {
+    if (!pens) {
+      return;
+    }
+
+    for (const item of pens) {
       for (const event of item.events) {
         if (event.type === EventType.WebSocket) {
           if (event.name && event.name === msg.event) {
@@ -53,10 +63,14 @@ export class Socket {
           }
         }
       }
-    }
-  };
 
-  doSocketMqtt(
+      if (item.type === PenType.Node) {
+        this.pensMqtt((item as Node).children, msg);
+      }
+    }
+  }
+
+  topologyMqtt(
     index: number,
     item: { type: EventType; action: EventAction; value: string; params: string; name?: string },
     msg: any,

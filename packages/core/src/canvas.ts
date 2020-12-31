@@ -11,7 +11,7 @@ export class Canvas extends Layer {
   canvas = document.createElement('canvas');
   width = 0;
   height = 0;
-  constructor(public parentElem: HTMLElement, public options: Options = {}, TID: String) {
+  constructor(public parentElem: HTMLElement, public options: Options = {}, TID: string) {
     super(TID);
     this.data = Store.get(this.generateStoreKey('topology-data'));
     this.canvas.style.position = 'absolute';

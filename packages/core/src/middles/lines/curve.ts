@@ -5,6 +5,7 @@ import { Pen } from '../../models/pen';
 import { Line } from '../../models/line';
 import { Direction } from '../../models/direction';
 import { pointInLine } from '../../utils/canvas';
+import { rgba } from '../../utils/math';
 
 const distance = 80;
 
@@ -24,7 +25,7 @@ export function curve(ctx: CanvasRenderingContext2D, l: Line) {
 
 export function curveControlPoints(ctx: CanvasRenderingContext2D, l: Line) {
   ctx.save();
-  ctx.fillStyle = ctx.strokeStyle + '80';
+  ctx.fillStyle = rgba(0.5, ctx.strokeStyle + '');
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(l.from.x, l.from.y);

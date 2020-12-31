@@ -54,6 +54,21 @@ export function find(idOrTag: string, pens: Pen[]) {
   return result;
 }
 
+export function del(idOrTag: string, pens: Pen[]) {
+  const deleted: Pen[] = [];
+  for (let i = 0; i < pens.length; i++) {
+    if (pens[i].id === idOrTag || pens[i].tags.indexOf(idOrTag) > -1) {
+      deleted.push(pens[i]);
+      pens.splice(i, 1);
+      --i;
+    } else if ((pens[i] as any).children) {
+      deleted.push.apply(deleted, del(idOrTag, (pens[i] as any).children));
+    }
+  }
+
+  return deleted;
+}
+
 export function getParent(pens: Pen[], child: Pen): Node {
   let parent: Node;
   for (const item of pens) {
@@ -84,7 +99,7 @@ export function getParent(pens: Pen[], child: Pen): Node {
   return parent;
 }
 
-export function pointInRect(point: Point, vertices: Point[]): boolean {
+export function pointInRect(point: { x: number; y: number }, vertices: Point[]): boolean {
   if (vertices.length < 3) {
     return false;
   }
