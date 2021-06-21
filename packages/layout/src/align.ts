@@ -34,9 +34,9 @@ export function alignNodes(pens: Pen[], rect: Rect, align: string) {
 }
 
 export function spaceBetween(pens: Pen[], width: number) {
-  pens = pens.sort((a:Pen, b:Pen) => {
-    return a.rect.x - b.rect.x
-  })
+  pens = pens.sort((a: Pen, b: Pen) => {
+    return a.rect.x - b.rect.x;
+  });
   let space = 0;
   let cnt = 0;
   for (const item of pens) {
@@ -68,32 +68,32 @@ export function spaceBetween(pens: Pen[], width: number) {
   }
 }
 export function spaceBetweenColumn(pens: Pen[], height: number) {
-  pens = pens.sort((a:Pen, b:Pen) => {
-    return a.rect.y - b.rect.y
-  })
+  pens = pens.sort((a: Pen, b: Pen) => {
+    return a.rect.y - b.rect.y;
+  });
   let space = 0;
   let cnt = 0;
   for (const item of pens) {
-      if (!(item instanceof Node)) {
-          continue;
-      }
-      space += item.rect.height;
-      ++cnt;
+    if (!(item instanceof Node)) {
+      continue;
+    }
+    space += item.rect.height;
+    ++cnt;
   }
   space = (height - space) / (cnt - 1);
   let top = 0;
   for (const item of pens) {
-      if (!(item instanceof Node)) {
-          continue;
-      }
-      if (!top) {
-          top = item.rect.y;
-      }
-      item.rect.y = top;
-      top += item.rect.height + space;
-      item.rect.floor();
-      item.rect.calcCenter();
-      item.init();
-      item.calcChildrenRect();
+    if (!(item instanceof Node)) {
+      continue;
+    }
+    if (!top) {
+      top = item.rect.y;
+    }
+    item.rect.y = top;
+    top += item.rect.height + space;
+    item.rect.floor();
+    item.rect.calcCenter();
+    item.init();
+    item.calcChildrenRect();
   }
 }

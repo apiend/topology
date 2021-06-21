@@ -16,7 +16,7 @@ export class Socket {
   }
 
   close() {
-    this.socket.onclose = null;
+    this.socket.onclose = undefined;
     this.socket.close();
   }
 }

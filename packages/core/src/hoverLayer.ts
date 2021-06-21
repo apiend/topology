@@ -8,7 +8,6 @@ import { Options } from './options';
 import { Lock } from './models/status';
 import { Layer } from './layer';
 import { rgba } from './utils/math';
-import { find } from './utils';
 
 export class HoverLayer extends Layer {
   line: Line;
@@ -40,7 +39,7 @@ export class HoverLayer extends Layer {
     if (this.line.from.id || this.line.to.id) {
       this.line.calcControlPoints();
     }
-    Store.set(this.generateStoreKey('pts-') + this.line.id, null);
+    Store.set(this.generateStoreKey('pts-') + this.line.id, undefined);
     Store.set(this.generateStoreKey('LT:updateLines'), [this.line]);
   }
 
@@ -53,7 +52,7 @@ export class HoverLayer extends Layer {
     if (this.line.from.id || this.line.to.id) {
       this.line.calcControlPoints();
     }
-    Store.set(this.generateStoreKey('pts-') + this.line.id, null);
+    Store.set(this.generateStoreKey('pts-') + this.line.id, undefined);
     Store.set(this.generateStoreKey('LT:updateLines'), [this.line]);
   }
 
@@ -164,6 +163,23 @@ export class HoverLayer extends Layer {
         ctx.stroke();
       }
     }
+    if (this.line && !this.data.locked) {
+
+      this.root = this.getRoot(this.line);
+      if (this.root) {
+        ctx.save();
+        ctx.strokeStyle = this.options.dragColor;
+        ctx.globalAlpha = 0.2;
+        if (this.root.rotate) {
+          ctx.translate(this.root.rect.center.x, this.root.rect.center.y);
+          ctx.rotate(((this.root.rotate + this.root.offsetRotate) * Math.PI) / 180);
+          ctx.translate(-this.root.rect.center.x, -this.root.rect.center.y);
+        }
+        ctx.beginPath();
+        ctx.strokeRect(this.root.rect.x, this.root.rect.y, this.root.rect.width, this.root.rect.height);
+        ctx.restore();
+      }
+    }
 
     if (this.dockAnchor) {
       ctx.save();
@@ -217,13 +233,13 @@ export class HoverLayer extends Layer {
     }
   }
 
-  getRoot(node: Node) {
-    if (!node.parentId) {
+  getRoot(pen: Pen) {
+    if (!pen.parentId) {
       return null;
     }
 
     for (const item of this.data.pens) {
-      if (item instanceof Node && item.id === node.parentId) {
+      if (item.id === pen.parentId) {
         const n = this.getRoot(item);
         return n ? n : item;
       }
@@ -233,7 +249,7 @@ export class HoverLayer extends Layer {
   }
 
   clear() {
-    this.node = null;
-    this.line = null;
+    this.node = undefined;
+    this.line = undefined;
   }
 }

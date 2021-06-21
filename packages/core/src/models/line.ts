@@ -76,13 +76,12 @@ export class Line extends Pen {
     }
 
     // 暂时兼容老数据
-    if (json.name === 'mind' && json.controlPoints && json.controlPoints.length < 3) {
-      json.controlPoints = null;
-      this.calcControlPoints();
+    if (json.name === 'mind' && (!json.controlPoints || json.controlPoints.length > 2)) {
+      json.controlPoints = undefined;
+      this.calcControlPoints(true);
     }
     // end
-
-    if (json.controlPoints) {
+    else if (json.controlPoints) {
       this.controlPoints = [];
       for (const item of json.controlPoints) {
         this.controlPoints.push(new Point(item.x, item.y, item.direction, item.anchorIndex, item.id));
@@ -100,28 +99,30 @@ export class Line extends Pen {
   setFrom(from: Point, fromArrow: string = '') {
     this.from = from;
     this.fromArrow = fromArrow;
-    this.textRect = null;
+    this.textRect = undefined;
   }
 
   setTo(to: Point, toArrow: string = 'triangleSolid') {
     this.to = to;
     this.toArrow = toArrow;
-    this.textRect = null;
+    this.textRect = undefined;
   }
 
   calcControlPoints(force?: boolean) {
-    if (this.manualCps && !force) {
+    if (this.name !== 'line' && this.manualCps && !force) {
       return;
     }
-    this.textRect = null;
+
+    this.textRect = undefined;
     if (this.from && this.to && drawLineFns[this.name]) {
+
       drawLineFns[this.name].controlPointsFn(this);
     }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
     if (this.animateDot) {
-      ctx.fillStyle = this.strokeStyle;
+      ctx.fillStyle = ctx.strokeStyle;
       if (this.animateType === 'dot') {
         ctx.beginPath();
         ctx.arc(this.animateDot.x, this.animateDot.y, this.animateDotSize, 0, 2 * Math.PI, false);
@@ -166,7 +167,7 @@ export class Line extends Pen {
       ctx.beginPath();
       ctx.lineDashOffset = 0;
       ctx.setLineDash([]);
-      ctx.fillStyle = this.fromArrowColor || this.strokeStyle || ctx.strokeStyle;
+      ctx.fillStyle = this.fromArrowColor || ctx.strokeStyle;
       ctx.strokeStyle = ctx.fillStyle;
       let f = this.to;
       if (this.name === 'curve') {
@@ -188,7 +189,7 @@ export class Line extends Pen {
       ctx.beginPath();
       ctx.lineDashOffset = 0;
       ctx.setLineDash([]);
-      ctx.fillStyle = this.toArrowColor || this.strokeStyle || ctx.strokeStyle;
+      ctx.fillStyle = this.toArrowColor || ctx.strokeStyle;
       ctx.strokeStyle = ctx.fillStyle;
       let f = this.from;
       if (this.name === 'curve') {
@@ -205,7 +206,7 @@ export class Line extends Pen {
           this.from,
           this.controlPoints[0],
           this.controlPoints[1],
-          this.controlPoints[2]
+          this.to
         );
       } else if (this.name !== 'line' && this.controlPoints.length) {
         f = this.controlPoints[this.controlPoints.length - 1];
@@ -243,8 +244,8 @@ export class Line extends Pen {
         }
         len += lineLen(curPt, this.to);
         return len | 0;
-
       case 'curve':
+      case 'mind':
         return curveLen(this.from, this.controlPoints[0], this.controlPoints[1], this.to);
       default:
         if (drawLineFns[this.name].getLength) {
@@ -334,6 +335,44 @@ export class Line extends Pen {
     return null;
   }
 
+  getPointByReversePos(pos: number): Point {
+    if (pos <= 0) {
+      return this.to;
+    }
+    switch (this.name) {
+      case 'line':
+        return this.getLinePtByPos(this.to, this.from, pos);
+      case 'polyline':
+        if (!this.controlPoints || !this.controlPoints.length) {
+          return this.getLinePtByPos(this.to, this.from, pos);
+        } else {
+          const points: Point[] = [];
+          this.controlPoints.forEach(item => {
+            points.unshift(item);
+          });
+          points.unshift(this.to);
+          let curPt = this.to;
+          for (const pt of points) {
+            const l = lineLen(curPt, pt);
+            if (pos > l) {
+              pos -= l;
+              curPt = pt;
+            } else {
+              return this.getLinePtByPos(curPt, pt, pos);
+            }
+          }
+          return this.from;
+        }
+      case 'curve':
+        return getBezierPoint(pos / this.getLen(), this.to, this.controlPoints[1], this.controlPoints[0], this.from);
+      default:
+        if (drawLineFns[this.name].getPointByReversePos) {
+          return drawLineFns[this.name].getPointByReversePos(pos, this);
+        }
+    }
+    return null;
+  }
+
   getLinePtByPos(from: Point, to: Point, pos: number) {
     const length = lineLen(from, to);
     if (pos <= 0) {
@@ -389,6 +428,8 @@ export class Line extends Pen {
   }
 
   initAnimate() {
+    this.animateStart = 0;
+    this.animateDot = undefined;
     this.animatePos = 0;
   }
 
@@ -402,17 +443,23 @@ export class Line extends Pen {
   stopAnimate() {
     this.pauseAnimate();
     this.initAnimate();
+    setTimeout(() => {
+      Store.set(this.generateStoreKey('LT:render'), {
+        pen: this,
+        stop: true,
+      });
+    }, 50);
   }
 
   animate(now: number) {
-    if (this.animateFromSize) {
-      this.lineDashOffset = -this.animateFromSize;
-    }
     this.animatePos += this.animateSpan;
-    this.animateDot = null;
     switch (this.animateType) {
       case 'beads':
-        this.lineDashOffset = -this.animatePos;
+        if (this.animateReverse) {
+          this.lineDashOffset = this.animatePos;
+        } else {
+          this.lineDashOffset = -this.animatePos;
+        }
         let len = this.lineWidth;
         if (len < 5) {
           len = 5;
@@ -425,18 +472,29 @@ export class Line extends Pen {
         break;
       case 'dot':
       case 'comet':
-        this.lineDash = null;
-        this.animateDot = this.getPointByPos(this.animatePos + this.animateFromSize);
+        this.lineDash = undefined;
+        let pos: any;
+        if (this.animateReverse) {
+          pos = this.getPointByReversePos(this.animatePos + this.animateToSize);
+        } else {
+          pos = this.getPointByPos(this.animatePos + this.animateFromSize);
+        }
+        this.animateDot = pos;
         break;
       default:
-        this.lineDash = [this.animatePos, this.length - this.animatePos + 1];
+        if (this.animateReverse) {
+          this.lineDash = [0, this.length - this.animatePos + 1, this.animatePos];
+        } else {
+          this.lineDash = [this.animatePos, this.length - this.animatePos + 1];
+        }
         break;
     }
 
     if (this.animatePos > this.length + this.animateSpan - this.animateFromSize - this.animateToSize) {
       if (++this.animateCycleIndex >= this.animateCycle && this.animateCycle > 0) {
         this.animateStart = 0;
-        this.animatePos = 0;
+        this.initAnimate();
+
         Store.set(this.generateStoreKey('animateEnd'), this);
         return;
       }
@@ -447,12 +505,21 @@ export class Line extends Pen {
 
   getBubbles() {
     const bubbles: any[] = [];
+
     for (let i = 0; i < 30 && this.animatePos - i > 0; ++i) {
-      bubbles.push({
-        pos: this.getPointByPos(this.animatePos - i * 2 + this.animateFromSize),
-        a: 1 - i * 0.03,
-        r: this.lineWidth - i * 0.01,
-      });
+      if (this.animateReverse) {
+        bubbles.push({
+          pos: this.getPointByReversePos(this.animatePos - i * 2 + this.animateToSize),
+          a: 1 - i * 0.03,
+          r: this.lineWidth - i * 0.01,
+        });
+      } else {
+        bubbles.push({
+          pos: this.getPointByPos(this.animatePos - i * 2 + this.animateFromSize),
+          a: 1 - i * 0.03,
+          r: this.lineWidth - i * 0.01,
+        });
+      }
     }
 
     return bubbles;
@@ -470,7 +537,7 @@ export class Line extends Pen {
       this.to.x += x;
       this.to.y += y;
       if (this.text) {
-        this.textRect = null;
+        this.textRect = undefined;
       }
 
       for (const pt of this.controlPoints) {
@@ -485,7 +552,7 @@ export class Line extends Pen {
       }
     }
 
-    Store.set(this.generateStoreKey('pts-') + this.id, null);
+    Store.set(this.generateStoreKey('pts-') + this.id, undefined);
   }
 
   scale(scale: number, center: { x: number; y: number; }) {
@@ -498,7 +565,7 @@ export class Line extends Pen {
       this.borderWidth *= scale;
       this.fontSize *= scale;
       if (this.text) {
-        this.textRect = null;
+        this.textRect = undefined;
       }
       this.textOffsetX *= scale;
       this.textOffsetY *= scale;
@@ -515,7 +582,7 @@ export class Line extends Pen {
       }
     }
 
-    Store.set(this.generateStoreKey('pts-') + this.id, null);
+    Store.set(this.generateStoreKey('pts-') + this.id, undefined);
   }
 
   hit(pt: Point, padding = 0): any {

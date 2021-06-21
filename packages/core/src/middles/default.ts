@@ -32,8 +32,15 @@ import {
   calcPolylineControlPoints,
   dockPolylineControlPoint,
 } from './lines/polyline';
-import { curve, curveControlPoints, pointInCurve, calcCurveControlPoints } from './lines/curve';
-import { mind, calcMindControlPoints, mindControlPoints, pointInMind } from './lines/mind';
+import {
+  curve,
+  curveControlPoints,
+  pointInCurve,
+  calcCurveControlPoints,
+} from './lines/curve';
+import {
+  calcMindControlPoints,
+} from './lines/mind';
 import { triangleSolid, triangle as arrowTriangle } from './arrows/triangle';
 import { diamondSolid, diamond as arrowDiamond } from './arrows/diamond';
 import { circleSolid, circle as arrowCircle } from './arrows/circle';
@@ -65,6 +72,10 @@ import { peopleIconRect, peopleTextRect } from './nodes/people.rect';
 import { rectangleIconRect, rectangleTextRect } from './nodes/rectangle.rect';
 import { graffiti } from './nodes/graffiti';
 import { graffitiAnchors } from './nodes/graffiti.anchor';
+import { mindNodeAnchors } from './nodes/mindNode.anchor';
+import { mindLine } from './nodes/mindLine';
+import { mindLineAnchors } from './nodes/mindLine.anchor';
+import { lines } from './nodes/lines';
 
 // Functions of drawing a node.
 export const drawNodeFns: any = {};
@@ -92,6 +103,9 @@ function init() {
   // graffiti
   drawNodeFns.graffiti = graffiti;
   anchorsFns.graffiti = graffitiAnchors;
+
+  // lines
+  drawNodeFns.lines = lines;
 
   // Square
   drawNodeFns.square = rectangle;
@@ -191,10 +205,20 @@ function init() {
   iconRectFns.cube = cubeIconRect;
   textRectFns.cube = cubeTextRect;
 
-  // Cube
+  // People
   drawNodeFns.people = people;
   iconRectFns.people = peopleIconRect;
   textRectFns.people = peopleTextRect;
+
+  // MindNode
+  drawNodeFns.mindNode = rectangle;
+  anchorsFns.mindNode = mindNodeAnchors;
+  iconRectFns.mindNode = rectangleIconRect;
+  textRectFns.mindNode = rectangleTextRect;
+
+  // MindLine
+  drawNodeFns.mindLine = mindLine;
+  anchorsFns.mindLine = mindLineAnchors;
   // ********end********
 
   // ********Default lines.*******
@@ -218,10 +242,10 @@ function init() {
     pointIn: pointInCurve,
   };
   drawLineFns.mind = {
-    drawFn: mind,
-    drawControlPointsFn: mindControlPoints,
+    drawFn: curve,
+    drawControlPointsFn: curveControlPoints,
     controlPointsFn: calcMindControlPoints,
-    pointIn: pointInMind,
+    pointIn: pointInCurve,
   };
   // ********end********
 
@@ -248,7 +272,7 @@ init();
 // anchorsFn - How to get the anchors.
 // iconRectFn - How to get the icon rect.
 // textRectFn - How to get the text rect.
-// force - Overwirte the node if exists.
+// protect - No overwirte the node if exists.
 export function registerNode(
   name: string,
   drawFn: (ctx: CanvasRenderingContext2D, node: Node) => void,
@@ -302,7 +326,7 @@ export function registerLine(
     pointIn: pointInFn,
     getLength,
     getCenter,
-    getPointByPos
+    getPointByPos,
   };
   return true;
 }
@@ -313,7 +337,12 @@ export function registerLine(
 // force - Overwirte the node if exists.
 export function registerArrow(
   name: string,
-  drawFn: (ctx: CanvasRenderingContext2D, from: Point, to: Point, size: number) => void,
+  drawFn: (
+    ctx: CanvasRenderingContext2D,
+    from: Point,
+    to: Point,
+    size: number
+  ) => void,
   protect?: boolean
 ) {
   // Exist
@@ -326,3 +355,4 @@ export function registerArrow(
 }
 
 (window as any).registerTopologyNode = registerNode;
+(window as any).registerTopologyLine = registerLine;

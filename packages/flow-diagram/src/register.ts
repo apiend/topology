@@ -18,13 +18,13 @@ import { flowComment, flowCommentAnchors } from './comment';
 
 export function register() {
   registerNode('flowData', flowData, flowDataAnchors, flowDataIconRect, flowDataTextRect);
-  registerNode('flowSubprocess', flowSubprocess, null, flowSubprocessIconRect, flowSubprocessTextRect);
-  registerNode('flowDb', flowDb, null, flowDbIconRect, flowDbTextRect);
+  registerNode('flowSubprocess', flowSubprocess, undefined, flowSubprocessIconRect, flowSubprocessTextRect);
+  registerNode('flowDb', flowDb, undefined, flowDbIconRect, flowDbTextRect);
   registerNode('flowDocument', flowDocument, flowDocumentAnchors, flowDocumentIconRect, flowDocumentTextRect);
   registerNode(
     'flowInternalStorage',
     flowInternalStorage,
-    null,
+    undefined,
     flowInternalStorageIconRect,
     flowInternalStorageTextRect
   );
@@ -35,9 +35,9 @@ export function register() {
     flowExternStorageIconRect,
     flowExternStorageTextRect
   );
-  registerNode('flowQueue', flowQueue, null, flowQueueIconRect, flowQueueTextRect);
+  registerNode('flowQueue', flowQueue, undefined, flowQueueIconRect, flowQueueTextRect);
   registerNode('flowManually', flowManually, flowManuallyAnchors, flowManuallyIconRect, flowManuallyTextRect);
   registerNode('flowDisplay', flowDisplay, flowDisplayAnchors, flowDisplayIconRect, flowDisplayTextRect);
-  registerNode('flowParallel', flowParallel, flowParallelAnchors, null, null);
-  registerNode('flowComment', flowComment, flowCommentAnchors, null, null);
+  registerNode('flowParallel', flowParallel, flowParallelAnchors, undefined, undefined);
+  registerNode('flowComment', flowComment, flowCommentAnchors, undefined, undefined);
 }

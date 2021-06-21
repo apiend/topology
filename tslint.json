@@ -9,7 +9,7 @@
     "prefer-literal": [true, "object"],
     "require-internal-with-underscore": true,
     "no-toplevel-property-access": [true, "packages/**/src/"],
-    "semicolon": [true],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
     "variable-name": [true, "ban-keywords"],
     "no-inner-declarations": [true, "function"],
     "no-debugger": true
@@ -20,7 +20,7 @@
     "no-duplicate-variable": true,
     "no-jasmine-focus": true,
     "require-internal-with-underscore": true,
-    "semicolon": [true],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
     "variable-name": [true, "ban-keywords"],
     "no-inner-declarations": [true, "function"]
   },

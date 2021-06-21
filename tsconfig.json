@@ -10,6 +10,8 @@
     "target": "es5",
     "allowJs": true,
     "lib": ["es2018", "dom"],
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports":true,
     "paths": {
       "@topology/core": ["packages/core"],
       "@topology/core/*": ["packages/core/src/*"],

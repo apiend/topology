@@ -59,16 +59,19 @@ export function calcCurveControlPoints(l: Line) {
     }
   }
   l.controlPoints = [getControlPt(l.from, l.to), getControlPt(l.to, l.from)];
-  Store.set(generateStoreKey(l, 'pts-') + l.id, null);
+  Store.set(generateStoreKey(l, 'pts-') + l.id, undefined);
 }
 
 export function pointInCurve(point: Point, l: Line) {
   let points: Point[] = Store.get(generateStoreKey(l, 'pts-') + l.id) as Point[];
   if (!points) {
     points = [l.from];
-    for (let i = 0.01; i < 1; i += 0.01) {
-      points.push(getBezierPoint(i, l.from, l.controlPoints[0], l.controlPoints[1], l.to));
+    if (l.controlPoints) {
+      for (let i = 0.01; i < 1; i += 0.01) {
+        points.push(getBezierPoint(i, l.from, l.controlPoints[0], l.controlPoints[1], l.to));
+      }
     }
+
     points.push(l.to);
     Store.set(generateStoreKey(l, 'pts-') + l.id, points);
   }

@@ -3,18 +3,13 @@ import { Options } from './options';
 import { Canvas } from './canvas';
 import { TopologyData } from './models/data';
 import { rgba } from './utils/math';
+import { Rect } from './models';
 
 export class RenderLayer extends Canvas {
   offscreen: any;
   data: TopologyData;
 
   bkImg: HTMLImageElement;
-  bkImgRect: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
   constructor(public parentElem: HTMLElement, public options: Options = {}, TID: string) {
     super(parentElem, options, TID);
     this.offscreen = Store.get(this.generateStoreKey('LT:offscreen'));
@@ -31,7 +26,9 @@ export class RenderLayer extends Canvas {
     this.bkImg.crossOrigin = 'anonymous';
     this.bkImg.src = this.data.bkImage;
     this.bkImg.onload = () => {
-      this.bkImgRect = this.coverRect(this.canvas.width, this.canvas.height, this.bkImg.width, this.bkImg.height);
+      if (!this.data.bkImageRect) {
+        this.data.bkImageRect = new Rect(0, 0, this.bkImg.naturalWidth, this.bkImg.naturalHeight);
+      }
       if (cb) {
         cb();
       }
@@ -39,11 +36,11 @@ export class RenderLayer extends Canvas {
   }
 
   clearBkImg() {
-    this.bkImgRect = null;
+    this.bkImg = undefined;
   }
 
   render = () => {
-    if (this.data && this.data.bkImage && !this.bkImgRect) {
+    if (this.data && this.data.bkImage && !this.bkImg) {
       this.loadBkImg(this.render);
       return;
     }
@@ -59,8 +56,8 @@ export class RenderLayer extends Canvas {
       ctx.fillRect(0, 0, this.width, this.height);
     }
 
-    if (this.bkImg && this.bkImgRect) {
-      ctx.drawImage(this.bkImg, 0, 0, this.width, this.height);
+    if (this.bkImg && this.data.bkImageRect) {
+      ctx.drawImage(this.bkImg, this.data.bkImageRect.x, this.data.bkImageRect.y, this.data.bkImageRect.width, this.data.bkImageRect.height);
     }
 
     if (this.data.grid || this.options.grid) {
@@ -134,25 +131,5 @@ export class RenderLayer extends Canvas {
     ctx.stroke();
 
     ctx.restore();
-  }
-
-  coverRect(canvasWidth: number, canvasHeight: number, imgWidth: number, imgHeight: number) {
-    let x = 0;
-    let y = 0;
-    let width = imgWidth;
-    let height = imgHeight;
-    if (imgWidth > imgHeight || (imgWidth === imgHeight && canvasWidth < canvasHeight)) {
-      width = (canvasWidth * height) / canvasHeight;
-      x = (imgWidth - width) / 2;
-    } else if (imgWidth < imgHeight || (imgWidth === imgHeight && canvasWidth > canvasHeight)) {
-      height = (canvasHeight * width) / canvasWidth;
-      y = (imgHeight - height) / 2;
-    }
-    return {
-      x,
-      y,
-      width,
-      height,
-    };
   }
 }

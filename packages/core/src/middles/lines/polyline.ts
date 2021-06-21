@@ -58,7 +58,7 @@ export function calcPolylineControlPoints(l: Line) {
 
 export function pointInPolyline(point: Point, l: Line): boolean {
   if (!l.controlPoints || !l.controlPoints.length) {
-    return pointInLine(point, l.from, l.to);
+    return pointInLine(point, l.from, l.to, l.lineWidth / 2);
   }
   if (pointInLine(point, l.from, l.controlPoints[0])) {
     return true;

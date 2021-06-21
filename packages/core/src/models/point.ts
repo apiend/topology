@@ -52,11 +52,11 @@ export class Point {
     return pt;
   }
 
-  hit(pt: { x: number; y: number }, radius = 5) {
+  hit(pt: { x: number; y: number; }, radius = 5) {
     return pt.x > this.x - radius && pt.x < this.x + radius && pt.y > this.y - radius && pt.y < this.y + radius;
   }
 
-  rotate(angle: number, center: { x: number; y: number }): Point {
+  rotate(angle: number, center: { x: number; y: number; }): Point {
     if (!angle || angle === 360) {
       return this;
     }
@@ -75,3 +75,4 @@ export class Point {
 }
 
 (window as any).topologyPoint = Point;
+(window as any).Le5leTopologyPoint = Point;

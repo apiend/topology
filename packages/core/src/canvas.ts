@@ -4,6 +4,8 @@ import { TopologyData } from './models/data';
 import { Options } from './options';
 import { Layer } from './layer';
 
+declare const window: any;
+
 export class Canvas extends Layer {
   static dpiRatio = 0;
 
@@ -24,13 +26,14 @@ export class Canvas extends Layer {
 
     if (!Canvas.dpiRatio) {
       if (!options.extDpiRatio && options.extDpiRatio !== 0) {
-        if (window.devicePixelRatio > 1) {
+        if (window && window.devicePixelRatio > 1) {
           options.extDpiRatio = 0.25;
         } else {
           options.extDpiRatio = 0;
         }
       }
-      Canvas.dpiRatio = window.devicePixelRatio + options.extDpiRatio;
+      Canvas.dpiRatio = (window ? window.devicePixelRatio : 0) + options.extDpiRatio;
+
 
       if (Canvas.dpiRatio < 1) {
         Canvas.dpiRatio = 1;

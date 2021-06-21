@@ -5,6 +5,6 @@ import {
 } from './class';
 
 export function register() {
-  registerNode('simpleClass', simpleClass, null, simpleClassIconRect, simpleClassTextRect);
-  registerNode('interfaceClass', interfaceClass, null, interfaceClassIconRect, interfaceClassTextRect);
+  registerNode('simpleClass', simpleClass, undefined, simpleClassIconRect, simpleClassTextRect);
+  registerNode('interfaceClass', interfaceClass, undefined, interfaceClassIconRect, interfaceClassTextRect);
 }

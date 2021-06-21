@@ -7,7 +7,10 @@ export function echarts(ctx: CanvasRenderingContext2D, node: Node) {
   rectangle(ctx, node);
 
   // tslint:disable-next-line:no-shadowed-variable
-  const echarts = echartsObjs.echarts || (window as any).echarts;
+  let echarts = echartsObjs.echarts;
+  if (!echarts && window) {
+    echarts = window['echarts'];
+  }
   if (!node.data || !echarts) {
     return;
   }
@@ -19,7 +22,7 @@ export function echarts(ctx: CanvasRenderingContext2D, node: Node) {
     return;
   }
 
-  if (!node.elementId) {
+  if (node.elementId === undefined || node.elementId === null) {
     node.elementId = s8();
   }
 
@@ -46,6 +49,14 @@ export function echarts(ctx: CanvasRenderingContext2D, node: Node) {
       echartsObjs[node.id].chart.setOption(node.data.echarts.option);
       echartsObjs[node.id].chart.resize();
       node.elementRendered = true;
+
+      setTimeout(() => {
+        const img = new Image();
+        img.src = echartsObjs[node.id].chart.getDataURL({
+          pixelRatio: 2
+        });
+        node.img = img;
+      }, 100);
     });
   }
 }

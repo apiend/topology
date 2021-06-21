@@ -4,6 +4,7 @@ import { Line } from './line';
 import { Lock } from './status';
 import { s8 } from '../utils';
 import { Store } from 'le5le-store';
+import { Rect } from './rect';
 
 export interface TopologyData {
   pens: Pen[];
@@ -14,6 +15,8 @@ export interface TopologyData {
   scale: number;
   locked: Lock;
   bkImage?: string;
+  bkImageRect?: Rect;
+  bkImageStatic?: boolean;
   bkColor?: string;
   grid?: boolean;
   gridColor?: string;
@@ -26,11 +29,13 @@ export interface TopologyData {
     clientId?: string;
     username?: string;
     password?: string;
+    customClientId?: boolean;
   };
   mqttTopics?: string;
   manualCps?: boolean;
   tooltip?: boolean | number;
   socketEvent?: boolean | number;
+  socketFn?: string;
 }
 
 export function createData(json?: any, tid?: string) {
@@ -72,6 +77,10 @@ export function createData(json?: any, tid?: string) {
         data.pens.push(new Line(item));
       }
     });
+
+    if (json.bkImageRect) {
+      data.bkImageRect = new Rect(json.bkImageRect.x, json.bkImageRect.y, json.bkImageRect.width, json.bkImageRect.height);
+    }
   }
 
   if (data.mqttOptions) {

@@ -1,6 +1,6 @@
 {
   "name": "@topology/chart-diagram",
-  "version": "0.3.0",
+  "version": "0.5.1",
   "description": "A chart tool using le5le-topology.",
   "main": "index.js",
   "types": "index.d.ts",

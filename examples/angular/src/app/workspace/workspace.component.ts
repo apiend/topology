@@ -25,7 +25,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   @ViewChild('workspace', { static: true }) workspace: ElementRef;
   tools: any[] = [];
   canvas: Topology;
-  canvasOptions: Options = {translateKey:4}; // 开启右键拖动画布
+  canvasOptions: Options = { translateKey: 4 }; // 开启右键拖动画布
   selection: {
     pen?: Pen;
     pens?: Pen[];
@@ -365,7 +365,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       return;
     }
     this.data.data = this.canvas.data;
-    this.canvas.toImage(2, 'image/png', 1, async (blob) => {
+    this.canvas.toImage(2, async (blob) => {
       if (this.data.id && !this.coreService.isVip(this.user)) {
         if (!(await this.service.DelImage(this.data.image))) {
           return;
@@ -452,12 +452,12 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSavePng(options?: { type?: string; quality?: any; ext?: string; }) {
+  onSavePng(options?: { ext?: string; }) {
     if (!options) {
       options = {};
     }
     const name = this.data.name + (options.ext || '.png');
-    this.canvas.saveAsImage(name, options.type, options.quality);
+    this.canvas.saveAsImage(name);
   }
 
   async onShare() {
