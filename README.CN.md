@@ -67,12 +67,17 @@ $ yarn build
 
 # 贡献者
 
-- [hudeyi](https://github.com/deyihu)
 - [Nickbing Lao](https://github.com/giscafer)
 - [ivanZzzz](https://github.com/ivan135)
 - [johnnyhhj](https://github.com/johnnyhhj)
 - [顽强的小强](https://github.com/FxLsoft)
 - [sunnyguohua](https://github.com/sunnyguohua)
+
+
+# 核心维护者
+
+- [Alsmile](https://github.com/Alsmile)
+- [hudeyi](https://github.com/deyihu)
 
 # 如何贡献
 
@@ -85,10 +90,6 @@ $ yarn build
 
 微信：alsmile123  
 邮箱：alsmile123@qq.com
-
-# 核心维护者
-
-- [Alsmile](https://github.com/Alsmile)
 
 # 谁在使用
 

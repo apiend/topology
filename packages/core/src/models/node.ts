@@ -18,7 +18,6 @@ const animateOutsides = [
   'events',
   'wheres',
   'text',
-  'fontColor',
   'fontFamily',
   'fontSize',
   'lineHeight',
@@ -30,7 +29,6 @@ const animateOutsides = [
   'iconFamily',
   'icon',
   'iconSize',
-  'iconColor',
 ];
 
 export class Node extends Pen {
@@ -200,8 +198,8 @@ export class Node extends Pen {
     this.animateType = json.animateType
       ? json.animateType
       : json.animateDuration
-        ? 'custom'
-        : '';
+      ? 'custom'
+      : '';
     this.init(cloneState);
 
     if (json.init && json.img && !json.image) {
@@ -699,7 +697,7 @@ export class Node extends Pen {
     this.rectInParent = {
       x:
         ((this.rect.x - parent.rect.x - parent.paddingLeftNum) * 100) /
-        parentW +
+          parentW +
         '%',
       y:
         ((this.rect.y - parent.rect.y - parent.paddingTopNum) * 100) / parentH +
@@ -732,10 +730,15 @@ export class Node extends Pen {
         i ? this.animateFrames[i - 1].state : this
       );
       this.animateFrames[i].offsetRect = new Rect(
-        this.animateFrames[i].state.rect.x - this.animateFrames[i].initState.rect.x,
-        this.animateFrames[i].state.rect.y - this.animateFrames[i].initState.rect.y,
-        this.animateFrames[i].state.rect.width - this.animateFrames[i].initState.rect.width,
-        this.animateFrames[i].state.rect.height - this.animateFrames[i].initState.rect.height);
+        this.animateFrames[i].state.rect.x -
+          this.animateFrames[i].initState.rect.x,
+        this.animateFrames[i].state.rect.y -
+          this.animateFrames[i].initState.rect.y,
+        this.animateFrames[i].state.rect.width -
+          this.animateFrames[i].initState.rect.width,
+        this.animateFrames[i].state.rect.height -
+          this.animateFrames[i].initState.rect.height
+      );
     }
     this.animateDuration = passed;
 
@@ -790,7 +793,10 @@ export class Node extends Pen {
       this.animatePos = 0;
       this.animateFrame = 0;
       this.restore();
-      if (this.animateCycle > 0 && ++this.animateCycleIndex >= this.animateCycle) {
+      if (
+        this.animateCycle > 0 &&
+        ++this.animateCycleIndex >= this.animateCycle
+      ) {
         this.animateStart = 0;
         this.animateCycleIndex = 0;
         Store.set(this.generateStoreKey('animateEnd'), this);
@@ -847,11 +853,13 @@ export class Node extends Pen {
             rectChanged = true;
           }
           if (item.state.rect.width !== item.initState.rect.width) {
-            this.rect.width = item.initState.rect.width + item.offsetRect.width * rate;
+            this.rect.width =
+              item.initState.rect.width + item.offsetRect.width * rate;
             rectChanged = true;
           }
           if (item.state.rect.height !== item.initState.rect.height) {
-            this.rect.height = item.initState.rect.height + item.offsetRect.height * rate;
+            this.rect.height =
+              item.initState.rect.height + item.offsetRect.height * rate;
             rectChanged = true;
           }
           this.rect.ex = this.rect.x + this.rect.width;
@@ -936,7 +944,7 @@ export class Node extends Pen {
                   (item.initState.data[key] || 0) +
                   ((item.state.data[key] || 0) -
                     (item.initState.data[key] || 0)) *
-                  rate;
+                    rate;
               } else if (
                 item.state.data[key] !== undefined &&
                 item.state.data[key] !== undefined
@@ -963,7 +971,7 @@ export class Node extends Pen {
     }
   }
 
-  scale(scale: number, center?: { x: number; y: number; }) {
+  scale(scale: number, center?: { x: number; y: number }) {
     if (!center) {
       center = this.rect.center;
     }
@@ -1191,7 +1199,7 @@ export class Node extends Pen {
     };
   }
 
-  hitInSelf(point: { x: number; y: number; }, padding = 0) {
+  hitInSelf(point: { x: number; y: number }, padding = 0) {
     if (this.rotate % 360 === 0) {
       return this.rect.hit(point, padding);
     }
@@ -1203,7 +1211,7 @@ export class Node extends Pen {
     return pointInRect(point, pts);
   }
 
-  hit(pt: { x: number; y: number; }, padding = 0) {
+  hit(pt: { x: number; y: number }, padding = 0) {
     let node: any;
     if (this.hitInSelf(pt, padding)) {
       node = this;

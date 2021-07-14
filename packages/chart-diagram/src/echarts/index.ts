@@ -46,6 +46,7 @@ export function echarts(ctx: CanvasRenderingContext2D, node: Node) {
   if (!node.elementRendered) {
     // 初始化时，等待父div先渲染完成，避免初始图表控件太大。
     setTimeout(() => {
+      echartsObjs[node.id].chart.clear();
       echartsObjs[node.id].chart.setOption(node.data.echarts.option);
       echartsObjs[node.id].chart.resize();
       node.elementRendered = true;

@@ -69,12 +69,17 @@ $ yarn build
 
 # Contributors
 
-- [hudeyi](https://github.com/deyihu)
 - [Nickbing Lao](https://github.com/giscafer)
 - [ivanZzzz](https://github.com/ivan135)
 - [johnnyhhj](https://github.com/johnnyhhj)
 - [FxLsoft](https://github.com/FxLsoft)
 - [sunnyguohua](https://github.com/sunnyguohua)
+
+# Core Maintainers
+
+- [Alsmile](https://github.com/Alsmile)
+- [hudeyi](https://github.com/deyihu)
+
 
 # Contributing
 
@@ -87,10 +92,6 @@ $ yarn build
 
 Wechat: alsmile123  
 Email: alsmile123@qq.com
-
-# Core Maintainers
-
-- [Alsmile](https://github.com/Alsmile)
 
 # Who is using
 

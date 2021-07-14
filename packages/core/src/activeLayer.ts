@@ -305,6 +305,17 @@ export class ActiveLayer extends Layer {
           break;
       }
 
+      if (item.parentId) {
+        let parent: Node;
+        for (const n of this.data.pens) {
+          if (n.id === item.parentId) {
+            parent = n as Node;
+            item.calcRectInParent(parent);
+            break;
+          }
+        }
+      }
+
       ++i;
     }
 
